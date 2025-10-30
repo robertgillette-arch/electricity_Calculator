@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electricity Cost Estimator</title>
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f9fbfd;
+    color: #333;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+  }
+  h1 {
+    text-align: center;
+    color: #1a73e8;
+  }
+  .controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  input[type="number"] {
+    width: 100px;
+    padding: 4px;
+    text-align: right;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background: #eaf1fb;
+  }
+  tr:nth-child(even) {
+    background: #f4f7fa;
+  }
+  .total {
+    font-weight: bold;
+    text-align: right;
+    font-size: 1.2em;
+  }
+  button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #155ab6;
+  }
+</style>
+</head>
+<body>
+
+<h1>💡 Electricity Cost Estimator</h1>
+<p>Check the appliances you use, enter how many hours per day they run, and see your estimated monthly cost. (Assumes 30 days per month.)</p>
+
+<div class="controls">
+  <label>Cost per kWh ($): <input type="number" id="rate" value="0.13" step="0.01"></label>
+  <button onclick="calculateTotal()">Calculate Total</button>
+</div>
+
+<table id="applianceTable">
+  <thead>
+    <tr>
+      <th>Use</th>
+      <th>Appliance</th>
+      <th>Watts</th>
+      <th>Hours/Day</th>
+      <th>Monthly Cost ($)</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<p class="total">Total Monthly Cost: $<span id="total">0.00</span></p>
+
+<script>
+const appliances = [
+  { name: "Fridge", watts: 150 },
+  { name: "Freezer", watts: 200 },
+  { name: "Dishwasher", watts: 1800 },
+  { name: "Range Oven", watts: 2400 },
+  { name: "Microwave", watts: 1000 },
+  { name: "Coffee Machine", watts: 900 },
+  { name: "Toaster Oven", watts: 1200 },
+  { name: "TV", watts: 100 },
+  { name: "Stereo", watts: 60 },
+  { name: "Tablet", watts: 15 },
+  { name: "Computer", watts: 150 },
+  { name: "Mobile Phones", watts: 10 },
+  { name: "Blu-Ray", watts: 30 },
+  { name: "DVD Player", watts: 30 },
+  { name: "Sound System", watts: 200 },
+  { name: "Washing Machine", watts: 500 },
+  { name: "Clothes Dryer", watts: 3000 },
+  { name: "Bedroom Lighting", watts: 60 },
+  { name: "Vacuum Cleaner", watts: 800 },
+  { name: "Air Purifier", watts: 50 },
+  { name: "Dehumidifier", watts: 350 },
+  { name: "Humidifier", watts: 250 },
+  { name: "Portable Fan", watts: 50 },
+  { name: "Ceiling Fan", watts: 75 },
+  { name: "Window Air Conditioner", watts: 1000 },
+  { name: "Water Heater", watts: 4500 },
+  { name: "Furnace", watts: 600 },
+  { name: "AC (Central)", watts: 3500 }
+];
+
+const tbody = document.querySelector("#applianceTable tbody");
+
+appliances.forEach((a, i) => {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td><input type="checkbox" id="use${i}"></td>
+    <td>${a.name}</td>
+    <td>${a.watts}</td>
+    <td><input type="number" id="hours${i}" value="1" min="0" max="24" step="0.5"></td>
+    <td id="cost${i}">0.00</td>
+  `;
+  tbody.appendChild(row);
+});
+
+function calculateTotal() {
+  const rate = parseFloat(document.getElementById("rate").value);
+  let total = 0;
+  appliances.forEach((a, i) => {
+    const use = document.getElementById(`use${i}`).checked;
+    const hours = parseFloat(document.getElementById(`hours${i}`).value);
+    const monthlyCost = use ? (a.watts * hours * 30 / 1000 * rate) : 0;
+    document.getElementById(`cost${i}`).textContent = monthlyCost.toFixed(2);
+    total += monthlyCost;
+  });
+  document.getElementById("total").textContent = total.toFixed(2);
+}
+</script>
+
+</body>
+</html>
